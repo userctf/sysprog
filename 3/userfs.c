@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 #define DESC_INIT_SIZE 10
 enum {
   BLOCK_SIZE = 512,
@@ -55,6 +54,7 @@ struct filedesc {
 
   /* PUT HERE OTHER MEMBERS */
   size_t pos;
+  int rights;
 };
 
 /**
@@ -214,6 +214,7 @@ int ufs_open(const char *filename, int flags) {
   }
   file_desc->file = current_file;
   file_desc->pos = 0;
+  file_desc->rights = flags;
   file_desc->file->refs++;
 
   // locate file_descriptor
@@ -247,6 +248,12 @@ ssize_t ufs_write(int fd, const char *buf, size_t size) {
     ufs_error_code = UFS_ERR_NO_FILE;
     return -1;
   }
+
+  if (file_desc->rights & UFS_READ_ONLY) {
+    ufs_error_code = UFS_ERR_NO_PERMISSION;
+    return -1;
+  }
+
   struct block *current_block = file_desc->file->block_list; // rewrite
   int block_id = file_desc->pos / BLOCK_SIZE;
   size_t offset = file_desc->pos % BLOCK_SIZE;
@@ -306,6 +313,11 @@ ssize_t ufs_read(int fd, char *buf, size_t size) {
   struct filedesc *file_desc = file_descriptors[fd];
   if (file_desc == NULL) {
     ufs_error_code = UFS_ERR_NO_FILE;
+    return -1;
+  }
+
+  if (file_desc->rights & UFS_WRITE_ONLY) {
+    ufs_error_code = UFS_ERR_NO_PERMISSION;
     return -1;
   }
 
