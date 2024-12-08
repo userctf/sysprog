@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "*.embeddedhtml": "html",
+        "unit.h": "c",
+        "userfs.h": "c",
+        "heap_help.h": "c",
+        "*.tcc": "c",
+        "string": "c",
+        "string_view": "c"
+    }
+}
