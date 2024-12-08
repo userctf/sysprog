@@ -394,7 +394,7 @@ int ufs_delete(const char *filename) {
     current_file->next->prev = current_file->prev;
   }
 
-  // current_file->is_deleted = 1;
+  current_file->is_deleted = 1;
 
   if (current_file->refs == 0 &&
       current_file->is_deleted == 1) { // clear memory
@@ -426,7 +426,7 @@ void ufs_destroy(void) {
   }
 
   // remove all descriptors
-  for (int i = 0; i < file_descriptor_capacity; ++i) {
+  for (int i = 0; i < file_descriptor_count; ++i) {
     if (file_descriptors[i] != NULL) {
       free(file_descriptors[i]);
     }
